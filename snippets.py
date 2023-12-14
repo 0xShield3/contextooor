@@ -96,11 +96,11 @@ class Snippets:
             decoded=self.decode_approval(txn)
             spender=decoded["spender"].lower()
 
-            if txn['to'] in unique_approvals.keys() and spender in unique_approvals['to']:
+            if txn['to'] in unique_approvals.keys() and spender in unique_approvals[txn['to']]:
                 continue
             if txn['to'] in unique_approvals.keys():
-                unique_approvals['to'].append(spender)
+                unique_approvals[txn['to']].append(spender)
             else:
-                unique_approvals['to']=[spender]
+                unique_approvals[txn['to']]=[spender]
             amount+=decoded['amount']*self.get_usd_value(txn['to'])
         return {'token_approvals':unique_approvals,'amount':amount}
