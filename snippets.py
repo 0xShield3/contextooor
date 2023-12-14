@@ -26,7 +26,7 @@ class Snippets:
         return code=="0x"
 
     def get_concurrent_approvals_on_token(self,your_address,token_address):
-        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={self.etherscan_api_key}".format(your_address,etherscan_api_key)
+        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={self.etherscan_api_key}"
         txns=requests.get(payload).json()['result']
         spenders=[]
         for txn in txns:
