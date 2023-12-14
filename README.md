@@ -1,5 +1,5 @@
 # Contextooor
-A library to gather more data from you transaction before broadcasting.
+A library to gather more data from your transaction before broadcasting.
 
 ``` pip install contextooor ```
 
