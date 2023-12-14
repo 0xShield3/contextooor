@@ -21,7 +21,6 @@ class universal_router:
     def getMaxSlippage(self,input_data):
         max_slippage=-2**256
         slippage_data=self.data.get_potential_slippage(self.web3,input_data)
-        print(slippage_data)
         for key in slippage_data.keys():
             if slippage_data[key]['max_slippage']>max_slippage:
                 max_slippage=slippage_data[key]['max_slippage']

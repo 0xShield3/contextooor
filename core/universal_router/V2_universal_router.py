@@ -39,7 +39,7 @@ class UniswapV2:
             multiply_this=data[1]["amountIn"]
             compare_to_this=data[1]["amountOutMin"]
         else:
-            return "ERROR: IMPROPER INVOCATION. Function asset_and_fraction_switch was called in a context it was not designed to be called."
+            raise ValueError("ERROR: IMPROPER INVOCATION. Function asset_and_fraction_switch was called in a context it was not designed to be called.")
         return fraction_switch,multiply_this,compare_to_this
 
     def getRatio(self,web3,pair_route):

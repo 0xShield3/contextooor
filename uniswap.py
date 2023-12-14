@@ -5,7 +5,7 @@ from web3 import Web3
 
 class uniswap:
 
-    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),block='latest'):
+    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),block='latest',suppress_errors=True):
         self.web3=w3
         self.universal_router=universal_router(self.web3)
         self.uniswapV3_router=uniswapV3_router(self.web3,block)
@@ -24,26 +24,36 @@ class uniswap:
                                          'slippage_function':self.uniswapV2_router.getSlippage,
                                          'volatility_function':self.uniswapV2_router.getVolatility}
                                     }
+        self.suppress_errors=suppress_errors
     
     def getSlippage(self,to_address,input_data,value=None):
-        to_address=self.web3.to_checksum_address(to_address)
-        if to_address not in self.SUPPORTED_CONTRACTS.keys():
-            raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router and supported.")
-        data=self.SUPPORTED_CONTRACTS[to_address]
-        function=data['slippage_function']
-        if data['name']=='uniswap_v2_router':
-            return function(input_data,value)
-        return function(input_data)
+        try:
+            to_address=self.web3.to_checksum_address(to_address)
+            if to_address not in self.SUPPORTED_CONTRACTS.keys():
+                raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router and supported.")
+            data=self.SUPPORTED_CONTRACTS[to_address]
+            function=data['slippage_function']
+            if data['name']=='uniswap_v2_router':
+                return function(input_data,value)
+            return function(input_data)
+        except ValueError as e:
+            if not self.suppress_errors:
+                return e
+        
     
     def getVolatility(self,input_data,block_depth=10):
-        to_address=self.web3.to_checksum_address(to_address)
-        if to_address not in self.SUPPORTED_CONTRACTS.keys():
-            raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router and supported.")
-        data=self.SUPPORTED_CONTRACTS[to_address]
-        if 'volatility_function' not in data.keys():
-            raise ValueError(f"This volatility cannot be interpolated from this address.  Currently this can only be done on the V2 and V3 routers")
-        function=data['volatility_function']
-        return function(input_data,block_depth)
+        try:
+            to_address=self.web3.to_checksum_address(to_address)
+            if to_address not in self.SUPPORTED_CONTRACTS.keys():
+                raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router and supported.")
+            data=self.SUPPORTED_CONTRACTS[to_address]
+            if 'volatility_function' not in data.keys():
+                raise ValueError(f"This volatility cannot be interpolated from this address.  Currently this can only be done on the V2 and V3 routers")
+            function=data['volatility_function']
+            return function(input_data,block_depth)
+        except ValueError as e:
+            if not self.suppress_errors:
+                return e
 
         
 

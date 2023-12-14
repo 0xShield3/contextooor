@@ -125,7 +125,7 @@ class Data:
         method_name=trx_input[0:10]
         
         if  method_name not in self.SUPPORTED_METHODS:
-            return f'Unsupported Method: {method_name}'
+            raise ValueError(f'Unsupported Method: {method_name}')
         
         prepped_data=self.extract_data(trx_input)
         data_with_routes=[]
