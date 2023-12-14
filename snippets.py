@@ -25,8 +25,8 @@ class Snippets:
         code=self.web3.eth.get_code(self.web3.to_checksum_address(address)).hex()
         return code=="0x"
 
-    def get_concurrent_approvals_on_token(self,your_address,token_address,etherscan_api_key):
-        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={etherscan_api_key}".format(your_address,etherscan_api_key)
+    def get_concurrent_approvals_on_token(self,your_address,token_address):
+        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={self.etherscan_api_key}".format(your_address,etherscan_api_key)
         txns=requests.get(payload).json()['result']
         spenders=[]
         for txn in txns:
@@ -43,7 +43,7 @@ class Snippets:
         return {'spenders':spenders,'concurrent_approvals':len(spenders)}
 
     def get_concurrent_approval_all(self,your_address):
-        payload=f"https://api.etherscan.io/api?module=account&action=txlist&sort=desc&address={your_address}&apikey={self.etherscan_api_key}".format(your_address,self.etherscan_api_key)
+        payload=f"https://api.etherscan.io/api?module=account&action=txlist&sort=desc&address={your_address}&apikey={self.etherscan_api_key}"
         txns=requests.get(payload).json()['result']
         spenders=[]
         for txn in txns:
@@ -58,7 +58,7 @@ class Snippets:
         return {'spenders':spenders,'concurrent_approvals':len(spenders)}
 
     def get_cumulative_approval_amount_on_token(self,your_address,token_address,in_usd):
-        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={self.etherscan_api_key}".format(your_address,self.etherscan_api_key)
+        payload=f"https://api.etherscan.io/api?module=account&sort=desc&action=txlist&address={your_address}&apikey={self.etherscan_api_key}"
         txns=requests.get(payload).json()['result']
         spenders=[]
         amount=0
@@ -82,9 +82,9 @@ class Snippets:
             amount+=decoded['amount']
         return {'spenders':spenders,'amount':amount*usd_value}
 
-    def get_cumulative_approval_amount_usd(self,your_address,etherscan_api_key):
+    def get_cumulative_approval_amount_usd(self,your_address):
         #I've only built this function with only usd value to have continuity over all assets
-        payload=f"https://api.etherscan.io/api?module=account&action=txlist&sort=desc&address={your_address}&apikey={etherscan_api_key}".format(your_address,etherscan_api_key)
+        payload=f"https://api.etherscan.io/api?module=account&action=txlist&sort=desc&address={your_address}&apikey={self.etherscan_api_key}"
         txns=requests.get(payload).json()['result']
         unique_approvals={}
         amount=0

@@ -80,7 +80,7 @@ class uniswapV3_router:
 
     def decode_input(self,input_data):
         method=input_data[0:10]
-        if method not in self.supported_methods.keys():
+        if method not in self.SUPPORTED_METHODS.keys():
             raise ValueError("This Uniswap V3 method is currently not supported")
         in_token=input_data[34:74]
         out_token=input_data[98:138]

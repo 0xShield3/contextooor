@@ -6,6 +6,7 @@ class universal_router:
     def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com"))):
         self.web3=w3
         self.data=Data()
+        self.SUPPORTED_METHODS=self.data.SUPPORTED_METHODS
     
     def getSlippageData(self,input_data):
         return self.data.get_potential_slippage(self.web3,input_data)
