@@ -1,6 +1,8 @@
 # Contextooor
 A library to gather more data from you transaction before broadcasting.
 
+``` pip install contextooor ```
+
 ## Uniswap:
     - Universal router supports execute, but missing support for the second execute method
     - Volatility and slippage on all swap methods on V2 router
