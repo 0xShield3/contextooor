@@ -44,19 +44,19 @@ class Data:
                 bridge_routes.append([from_idx,to_idx])
         return bridge_routes,all_items
     
-    def get_easy_slippage(self,web3,data,amount_in=None):
+    def get_easy_slippage(self,web3,data,amount_in=None,block="latest"):
         uniswap=self.SUPPORTED_FUNCTIONS[data[0]]
-        result=uniswap.get_max_slippage(web3,data,amount_in)
+        result=uniswap.get_max_slippage(web3,data,amount_in,block)
         return result
 
-    def process_bridge_routes(self,web3,data,bridge_routes):
+    def process_bridge_routes(self,web3,data,bridge_routes,block):
         returnable_list=[]
         for route in bridge_routes:
             running_unslippage=1
             amount_in=None
             for idx,inner_route in enumerate(route):
                 this_route_data=data[inner_route]
-                slippage_dict=self.get_easy_slippage(web3,this_route_data,amount_in=amount_in)
+                slippage_dict=self.get_easy_slippage(web3,this_route_data,amount_in=amount_in,block=block)
                 amount_in=slippage_dict['amount_out']
                 if idx == 0:
                     in_token=slippage_dict['in_token']
@@ -121,7 +121,7 @@ class Data:
                     max_slippage=slip['slippage']
         return total,max_slippage
 
-    def get_potential_slippage(self,web3,trx_input):
+    def get_potential_slippage(self,web3,trx_input,block):
         method_name=trx_input[0:10]
         
         if  method_name not in self.SUPPORTED_METHODS:
@@ -135,11 +135,11 @@ class Data:
             pair_route=uniswap.getPoolAddresses(web3,pool_planner)
             data_with_routes.append([route[0],route[1],pair_route])
         bridge_routes,flat_list=self.get_bridge_routes(data_with_routes)
-        results=self.process_bridge_routes(web3,data_with_routes,bridge_routes)
+        results=self.process_bridge_routes(web3,data_with_routes,bridge_routes,block)
         for j,k in enumerate(data_with_routes):
             if j in flat_list:
                 continue
-            deez_results=self.get_easy_slippage(web3,k)
+            deez_results=self.get_easy_slippage(web3,data=k,block=block)
             results.append(deez_results)
         unique_in_tokens= self.get_unique_in_tokens(results)
         aggregate_results={}

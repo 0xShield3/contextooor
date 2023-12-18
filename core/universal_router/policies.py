@@ -3,13 +3,14 @@ from web3 import Web3
 
 class universal_router:
 
-    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com"))):
+    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),block="latest"):
+        self.block=block
         self.web3=w3
         self.data=Data()
         self.SUPPORTED_METHODS=self.data.SUPPORTED_METHODS
     
     def getSlippageData(self,input_data):
-        return self.data.get_potential_slippage(self.web3,input_data)
+        return self.data.get_potential_slippage(self.web3,input_data,self.block)
     
     def getSlippageWrapped(self,input_data,default='max_avg'):
         if default not in ['max_avg', 'max']:
@@ -21,7 +22,7 @@ class universal_router:
 
     def getMaxSlippage(self,input_data):
         max_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['max_slippage']>max_slippage:
                 max_slippage=slippage_data[key]['max_slippage']
@@ -29,7 +30,7 @@ class universal_router:
 
     def getMaxAvgSlippage(self,input_data):
         max_avg_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['weighted_slippage']>max_avg_slippage:
                 max_avg_slippage=slippage_data[key]['weighted_slippage']
@@ -37,7 +38,7 @@ class universal_router:
 
     def max_slippage_is_equal_to_greater_than(self,threshold,input_data):
         max_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['max_slippage']>max_slippage:
                 max_slippage=slippage_data[key]['max_slippage']
@@ -47,7 +48,7 @@ class universal_router:
     
     def max_slippage_is_greater_than(self,threshold,input_data):
         max_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['max_slippage']>max_slippage:
                 max_slippage=slippage_data[key]['max_slippage']
@@ -57,7 +58,7 @@ class universal_router:
     
     def highest_average_slippage_is_equal_to_greater_than(self,threshold,input_data):
         max_avg_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['weighted_slippage']>max_avg_slippage:
                 max_avg_slippage=slippage_data[key]['weighted_slippage']
@@ -67,7 +68,7 @@ class universal_router:
 
     def highest_average_slippage_is_greater_than(self,threshold,input_data):
         max_avg_slippage=-2**256
-        slippage_data=self.data.get_potential_slippage(self.web3,input_data)
+        slippage_data=self.data.get_potential_slippage(self.web3,input_data,self.block)
         for key in slippage_data.keys():
             if slippage_data[key]['weighted_slippage']>max_avg_slippage:
                 max_avg_slippage=slippage_data[key]['weighted_slippage']
