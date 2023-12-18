@@ -37,7 +37,7 @@ class uniswap:
             data=self.SUPPORTED_CONTRACTS[to_address]
             function=data['slippage_function']
             if data['name']=='uniswap_v2_router':
-                return function(input_data,value)
+                return {"success":function(input_data,value)}
             return {"success":function(input_data)}
         except ValueError as e:
             if self.suppress_errors:
