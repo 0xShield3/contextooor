@@ -38,10 +38,10 @@ class uniswap:
             function=data['slippage_function']
             if data['name']=='uniswap_v2_router':
                 return function(input_data,value)
-            return function(input_data)
+            return {"success":function(input_data)}
         except ValueError as e:
             if self.suppress_errors:
-                return {"ERROR":e.args}
+                return {"error":e.args}
             else: 
                 raise ValueError(e.args)
         
@@ -55,10 +55,10 @@ class uniswap:
             if 'volatility_function' not in data.keys():
                 raise ValueError(f"This volatility cannot be interpolated from this address.  Currently this can only be done on the V2 and V3 routers")
             function=data['volatility_function']
-            return function(input_data,block_depth)
+            return {'success':function(input_data,block_depth)}
         except ValueError as e:
             if self.suppress_errors:
-                return {"ERROR":e.args}
+                return {"error":e.args}
             else: 
                 raise ValueError(e.args)
 
