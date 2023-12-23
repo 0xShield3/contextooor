@@ -48,6 +48,8 @@ class uniswapV3_router:
         fee=int.from_bytes(bytes.fromhex(input_data[198:202]))
         amount_in=int.from_bytes(bytes.fromhex(input_data[330:394]))
         amount_out=int.from_bytes(bytes.fromhex(input_data[394:458]))
+        if (amount_out == 0):
+            amount_out=1 # This is to avoid division by zero
         exchange_rate=self.safe_division(amount_out,amount_in)**inverse
         return "0x"+token0,"0x"+token1,fee,exchange_rate,inverse
 
