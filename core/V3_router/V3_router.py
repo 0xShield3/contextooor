@@ -18,7 +18,7 @@ class uniswapV3_router:
     def getOptimalRate(self,token0,token1,fee,inverse):
         pool_addr=self.factory_contract.functions.getPool(Web3.to_checksum_address(token0),Web3.to_checksum_address(token1),fee).call(block_identifier=self.block)
         sqrtpricex96=self.web3.eth.contract(pool_addr,abi=self.pool_abi).functions.slot0().call(block_identifier=self.block)[0]
-        optimal_rate=(sqrtpricex96/(2**96))**(2*inverse)
+        optimal_rate=SafeMath().safe_exponent(sqrtpricex96/(2**96),(2*inverse))
         return optimal_rate
     
     def getRate(self,token0,token1,fee,block='latest'):
@@ -48,7 +48,7 @@ class uniswapV3_router:
         fee=int.from_bytes(bytes.fromhex(input_data[198:202]))
         amount_in=int.from_bytes(bytes.fromhex(input_data[330:394]))
         amount_out=int.from_bytes(bytes.fromhex(input_data[394:458]))
-        exchange_rate=self.safe_division(amount_out,amount_in)**inverse
+        exchange_rate=SafeMath().safe_exponent(self.safe_division(amount_out,amount_in),inverse)
         return "0x"+token0,"0x"+token1,fee,exchange_rate,inverse
 
     def exactSingle_slippage(self,input_data):
@@ -98,7 +98,7 @@ class uniswapV3_router:
             fee=path[1+base]
             addr2=path[2+base]
             token0,token1,inverse=self.align_tokens_inverse(addr1,addr2)
-            optimal_rate=self.getRate(token0,token1,fee,block)**inverse
+            optimal_rate=SafeMath().safe_exponent(self.getRate(token0,token1,fee,block),inverse)
             running_rate=running_rate*optimal_rate*(1-(fee/1000000))
         return running_rate
     

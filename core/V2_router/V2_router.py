@@ -48,7 +48,7 @@ class uniswapV2_router:
             token0,token1,inverse=self.align_tokens_inverse(k,path[j+1])
             pair_addr=self.factory_contract.functions.getPair(token0,token1).call()
             reserves=self.web3.eth.contract(pair_addr,abi=self.pair_abi).functions.getReserves().call(block_identifier=self.block)
-            optimal_rate=self.safe_division(reserves[1],reserves[0])**inverse
+            optimal_rate=SafeMath().safe_exponent(self.safe_division(reserves[1],reserves[0]),inverse)
             running_rate=running_rate*optimal_rate*0.997
         return running_rate
 

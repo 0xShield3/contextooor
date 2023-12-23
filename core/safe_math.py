@@ -25,7 +25,7 @@ class SafeMath:
                 raise ValueError("0/0 is undefined")
             else:
                 result=float('inf')
-        elif numerator==float('inf') or numerator>=inf or numerator==float('-inf') or numerator<=-inf:
+        elif numerator==inf or numerator>=inf or numerator==float('-inf') or numerator<=-inf:
             if numerator==float('inf') or numerator>=inf or numerator==float('-inf') or numerator<=-inf:
                 if numerator==float('inf') or numerator>=inf:
                     numerator=inf
@@ -37,9 +37,14 @@ class SafeMath:
         else:
             result=float(numerator)/float(denominator)
         
-        if type(result).__name__=='int':
-            if result>=inf:
-                result=float("inf")
-            elif result<=-inf:
-                result=float('-inf')
         return result
+    
+    def safe_exponent(self,base,exponent):
+        if exponent>=0:
+            return base**exponent
+        else:
+            if base==0:
+                return float('inf')
+            else:
+                return base**exponent
+

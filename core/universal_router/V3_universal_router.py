@@ -52,7 +52,7 @@ class UniswapV3:
         ratios=[]
         for pool_address in pair_route.keys():
             pool_data=pair_route[pool_address]
-            ratios.append(self.getRatio(web3,pool_address,block)**self.potential_inverse(pool_data[0],pool_data[1]))
+            ratios.append(SafeMath().safe_exponent(self.getRatio(web3,pool_address,block),self.potential_inverse(pool_data[0],pool_data[1])))
         return reduce(operator.mul, ratios)
 
     def get_max_slippage(self,web3,data,in_amount=None,block='latest'):
