@@ -7,6 +7,10 @@ class uniswap:
 
     def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),block='latest',suppress_errors=True):
         self.web3=w3
+        try:
+            self.web3.eth.get_block_number()
+        except Exception:
+            self.web3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com"))
         self.universal_router=universal_router(self.web3,block)
         self.uniswapV3_router=uniswapV3_router(self.web3,block)
         self.uniswapV2_router=uniswapV2_router(self.web3,block)

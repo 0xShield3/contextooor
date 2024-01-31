@@ -1,4 +1,4 @@
 """
 "Get contextual information before broadcasting a transaction."
 """
-__version__ = "0.9.2"
+__version__ = "0.9.4"
