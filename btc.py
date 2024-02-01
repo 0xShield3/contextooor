@@ -1,4 +1,50 @@
-from bitcoin.transaction import deserialize,txhash
+
+
+def decode_script(script_hex):
+    script = CScript(script_hex)
+    try:
+        # Attempt to convert to a Bitcoin address
+        address = CBitcoinAddress.from_scriptPubKey(script)
+        return str(address)
+    except ValueError:
+        return 'Unknown or unsupported script type'
+
+def decode_transaction(tx_hex):
+    tx = CTransaction.deserialize(bytes.fromhex(tx_hex))
+    txid = tx.GetHash().hex()
+    inputs = [{'txid': i.prevout.hash, 'vout': i.prevout.n, 'sequence': i.nSequence} for i in tx.vin]
+    outputs = [{'addresses': decode_script(o.scriptPubKey), 'value': o.nValue} for o in tx.vout]
+    return {'txid': txid, 'inputs': inputs, 'outputs': outputs}
+
+def get_frame(decoded_tx):
+    df=pl.DataFrame(decoded_tx['outputs'])\
+    .group_by(pl.col.addresses).agg(value=pl.col.value.sum())
+    return df
+
+def contains_sanctioned_addresses(decoded_tx_frame):
+    sanctioned_df=pl.read_parquet("btc_sanctioned_addresses.parquet")
+    joined=sanctioned_df.join(decoded_tx_frame,on='addresses')
+    return len(joined)!=0
+
+def total_value(decoded_tx_frame,denomination="satoshi"):
+    total=decoded_tx_frame.select(pl.col.value.sum()).item()
+    if denomination=="bitcoin":
+        total=total/10**8
+    return total
+
+def value_to(decoded_tx_frame,target_address,denomination="satoshi"):
+    df=decoded_tx_frame.filter(pl.col.addresses==target_address)
+    amount=df.select(pl.col.value.sum()).item()
+    if denomination=="bitcoin":
+        amount=amount/10**8
+    return amount
+
+
+
+
+
+
+from bitcoin.core import CTransaction
 from bitcoin.core.script import CScript
 from bitcoin.wallet import CBitcoinAddress
 import polars as pl
@@ -10,19 +56,19 @@ class BitcoinUtils:
         self.decoded_dataframe=self.get_frame()
         
     def decode_script(self,script_hex):
-        script = CScript(bytes.fromhex(script_hex))
+        script = CScript(script_hex)
         try:
             # Attempt to convert to a Bitcoin address
             address = CBitcoinAddress.from_scriptPubKey(script)
             return str(address)
         except ValueError:
-            return 'Unknown or unsupported script type'
+            return 'Unable2Decode'
 
     def decode_transaction(self):
-        tx = deserialize(self.encoded_btc_tx)
-        txid = txhash(self.encoded_btc_tx)
-        inputs = [{'txid': i['outpoint']['hash'], 'vout': i['outpoint']['index'], 'sequence': i['sequence']} for i in tx['ins']]
-        outputs = [{'addresses': self.decode_script(o['script']), 'value': o['value']} for o in tx['outs']]
+        tx = CTransaction.deserialize(bytes.fromhex(self.encoded_btc_tx))
+        txid = tx.GetHash().hex()
+        inputs = [{'txid': i.prevout.hash, 'vout': i.prevout.n, 'sequence': i.nSequence} for i in tx.vin]
+        outputs = [{'addresses': self.decode_script(o.scriptPubKey), 'value': o.nValue} for o in tx.vout]
         return {'txid': txid, 'inputs': inputs, 'outputs': outputs}
 
     def get_frame(self):
