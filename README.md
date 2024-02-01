@@ -25,6 +25,7 @@ A library to gather more data from your transaction before broadcasting.
     - Recipient is in OFAC Sanction list
     - Largest individual amount sent
     - Number of recipients
+    - Arbitrary rich contexting with parquet files
 
 ## How 2 context
 ### EVM Contexting
@@ -68,6 +69,9 @@ print("Bitcoins sent to 'bc1...':",bitcoin.value_to("bc1qdugdmvfqrq5qjlw4ta7alen
 
 print("Decoded transaction object:",bitcoin.decoded_tx_obj)
 print("Polars dataframe of recipient and their value (aggregated to unique addresses)",bitcoin.decoded_dataframe)
+
+print("enriched context:",bitcoin.enrich_context_with_parquet_file("known_scammers.parquet")
+print("contains known scammers?", bitcoin.has_matches("known_scammers.parquet"))
 
 
 ```

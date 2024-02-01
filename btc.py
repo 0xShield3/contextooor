@@ -62,6 +62,9 @@ class BitcoinUtils:
         ### The addresses must be checksum addresses, but if needed we can support non-checksum
         df=pl.read_parquet(path_to_parquet_file)
         return self.decoded_dataframe.join(df,on=on_col_name)
+    
+    def has_address_matches(self,path_to_parquet_file):
+        return len(self.enrich_context_with_parquet_file(path_to_parquet_file))!=0
         
 
 
