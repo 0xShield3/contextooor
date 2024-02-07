@@ -15,6 +15,7 @@ A library to gather more data from your transaction before broadcasting.
     - Concurrent approvals on all tokens
     - Total amount approved on a specific token (usd or token value)
     - Total amount approved on all tokens (usd)
+    - Using Forta's attack detector feed labels, is the address a known attacker?
     - Moooore 
 
 ## Bitcoin:
