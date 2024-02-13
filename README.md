@@ -16,6 +16,7 @@ A library to gather more data from your transaction before broadcasting.
     - Total amount approved on a specific token (usd or token value)
     - Total amount approved on all tokens (usd)
     - Using Forta's attack detector feed labels, is the address a known attacker?
+    - On the fly audits using slither and slitherin detectors
     - Moooore 
 
 ## Bitcoin:
@@ -75,4 +76,13 @@ print("enriched context:",bitcoin.enrich_context_with_parquet_file("known_scamme
 print("contains known scammers?", bitcoin.has_matches("known_scammers.parquet"))
 
 
+```
+
+### On the fly audits
+To use the slither/slitherin policies, you'll need to install some software using the following commands. Make sure the code is executing in a virtual environment. Currently can't get this to work on macOS in a virtual environment. Workin' on it
+``` Shell
+## Linux
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:ethereum/ethereum
+sudo apt install solc
 ```

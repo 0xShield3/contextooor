@@ -1,5 +1,8 @@
 from web3 import Web3
 import requests
+import json
+import subprocess
+import os
 
 class Snippets:
 
@@ -120,4 +123,35 @@ class Snippets:
                 unique_approvals[txn['to']]=[spender]
             amount+=decoded['amount']*self.get_usd_value(txn['to'])
         return {'token_approvals':unique_approvals,'amount':amount}
+    
+    def get_audit(self,address,summarize=True):
+        current_directory = os.getcwd()
+        command = ["slither", address, "--json", "-"]
+
+        result = subprocess.run(command, capture_output=True, text=True,cwd=current_directory)
+        print(result.stdout)
+        data=json.loads(result.stdout)
+        if summarize==False:
+            return data
+        parsed_results = []
+        summary={}
+
+        for detector in data.get("results", {}).get("detectors", []):
+
+            check = detector.get("check", "")
+            impact = detector.get("impact", "").capitalize()
+            if impact in summary.keys():
+                summary[impact]+=1
+            else:
+                summary[impact]=1
+
+            confidence = detector.get("confidence", "").capitalize()
+            
+            # Append the extracted information to the results list
+            parsed_results.append({
+                "check": check,
+                "impact": impact,
+                "confidence": confidence
+            })
+        return {"summary":summary,"results":parsed_results}
     

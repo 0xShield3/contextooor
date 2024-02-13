@@ -2,6 +2,7 @@ from bitcoin.core import CTransaction
 from bitcoin.core.script import CScript
 from bitcoin.wallet import CBitcoinAddress
 import polars as pl
+import requests
 
 class BitcoinUtils:
     def __init__(self,encoded_btc_tx):
@@ -36,22 +37,28 @@ class BitcoinUtils:
         return len(joined)!=0
 
     def total_value(self,denomination="satoshi"):
-        total=self.decoded_dataframe.select(pl.col.value.sum()).item()
+        amount=self.decoded_dataframe.select(pl.col.value.sum()).item()
         if denomination=="bitcoin":
-            total=total/10**8
-        return total
+            amount=amount/10**8
+        elif denomination=="USD":
+            amount=self.get_usd_value(amount)
+        return amount
 
-    def value_to(self,target_address,denomination="satoshi"):
+    def value_to(self,target_address,denomination="bitcoin"):
         df=self.decoded_dataframe.filter(pl.col.addresses==target_address)
         amount=df.select(pl.col.value.sum()).item()
         if denomination=="bitcoin":
             amount=amount/10**8
+        elif denomination=="USD":
+            amount=self.get_usd_value(amount)
         return amount
     
-    def max_single_transfer(self,denomination="satoshi"):
+    def max_single_transfer(self,denomination="bitcoin"):
         amount=self.decoded_dataframe.select(pl.col.value.max()).item()
         if denomination=="bitcoin":
             amount=amount/10**8
+        elif denomination=="USD":
+            amount=self.get_usd_value(amount)
         return amount
     
     def recipient_count(self):
@@ -65,6 +72,13 @@ class BitcoinUtils:
     
     def has_address_matches(self,path_to_parquet_file):
         return len(self.enrich_context_with_parquet_file(path_to_parquet_file))!=0
+    
+    
+    def get_usd_value(self,satoshis):
+        value=requests.get(f"https://coins.llama.fi/prices/current/coingecko:bitcoin").json()
+        value=float(satoshis)*float(value["coins"]["coingecko:bitcoin"]['price'])/(10**8)
+        return value
+    
         
 
 
@@ -77,4 +91,8 @@ class BitcoinUtils:
 # print(btc.total_value(denomination="bitcoin"))
 # print(btc.value_to("32KUV7TfdhmY5gGdemGUm7mYr31S56BpHb",denomination="bitcoin"))
 # print(btc.max_single_transfer(denomination="bitcoin"))
+# print(btc.total_value(denomination="USD"))
+# print(btc.value_to("32KUV7TfdhmY5gGdemGUm7mYr31S56BpHb",denomination="USD"))
+# print(btc.max_single_transfer(denomination="USD"))
 # print(btc.recipient_count())
+
