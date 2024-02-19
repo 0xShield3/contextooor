@@ -89,7 +89,7 @@ sudo apt install solc
 ```
 
 ### Solana Contexting
-''' Python
+``` Python
 ## Currently only supports base64 encoded transactions
 
 from contextooor.sol import Snippets
@@ -101,4 +101,4 @@ print(solana.native_transfer_value(denomination="solana"))
 print(solana.native_transfer_value(denomination="usd"))
 
 
-'''
+```
