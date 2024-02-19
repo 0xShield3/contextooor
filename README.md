@@ -3,13 +3,13 @@ A library to gather more data from your transaction before broadcasting.
 
 ``` pip install contextooor ```
 
-## Uniswap:
+## eth_uniswap:
     - Universal router supports execute, but missing support for the second execute method
     - Volatility and slippage on all swap methods on V2 router
     - Other than multicall, slippage and volatility on all swap methods on V3 router
     - TODO: Transactions directly to pairs, multicall on V3, second execute method on universal router, volatility on universal router, fee accounting on universal router
 
-## Snippets:
+## Ethereum:
     - Converting to USD
     - Concurrent approvals on a specific token
     - Concurrent approvals on all tokens
@@ -28,6 +28,9 @@ A library to gather more data from your transaction before broadcasting.
     - Largest individual amount sent
     - Number of recipients
     - Arbitrary rich contexting with parquet files
+## Solana:
+    - Decoding Base64
+    - Native Value Transfers (lamports/sol/usd)
 
 ## How 2 context
 ### EVM Contexting
@@ -73,7 +76,7 @@ print("Bitcoins sent to 'bc1...':",bitcoin.value_to("bc1qdugdmvfqrq5qjlw4ta7alen
 print("Decoded transaction object:",bitcoin.decoded_tx_obj)
 print("Polars dataframe of recipient and their value (aggregated to unique addresses)",bitcoin.decoded_dataframe)
 
-print("enriched context:",bitcoin.enrich_context_with_parquet_file("known_scammers.parquet")
+print("enriched context:",bitcoin.enrich_context_with_parquet_file("known_scammers.parquet"))
 print("contains known scammers?", bitcoin.has_matches("known_scammers.parquet"))
 
 
