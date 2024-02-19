@@ -32,8 +32,8 @@ A library to gather more data from your transaction before broadcasting.
 ## How 2 context
 ### EVM Contexting
 ```Python
-from contextooor.uniswap import uniswap
-from contextooor.snippets import Snippets
+from contextooor.eth_uniswap import Snippets
+from contextooor.eth import Snippets
 from web3 import Web3
 
 your_address="0x077B78B2793C956080888c4A496Ea81eCa11827F"
@@ -41,8 +41,8 @@ weth_contract="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 w3=Web3(Web3.HTTPProvider("https://your-rpc-url.com"))
 
 ##w3 is an optional variable, defaulting to public rpcs
-uniswap(w3=w3).getSlippage(to_address="0x",input_data="0x",value=123)
-uniswap(w3=w3).getVolatility(to_address="0x",input_data="0x")
+Snippets(w3=w3).getSlippage(to_address="0x",input_data="0x",value=123)
+Snippets(w3=w3).getVolatility(to_address="0x",input_data="0x")
 
 Snippets().get_concurrent_approval_all(your_address=your_address)
 Snippets().get_concurrent_approvals_on_token(your_address=your_address,token_address=weth_contract)
@@ -50,21 +50,22 @@ Snippets().get_cumulative_approval_amount_on_token(your_address=your_address,tok
 Snippets().get_cumulative_approval_amount_usd(your_address=your_address)
 Snippets().get_usd_value(token=weth_contract)
 Snippets().is_externally_owned_account(address=your_address)
+Snippets().get_audit(address=weth_contract)
 
 ```
 ### Bitcoin contexting
 ```Python
 from contextooor import btc
 encoded_tx="0200000..."
-bitcoin=btc.BitcoinUtils(encoded_tx)
+bitcoin=btc.Snippets(encoded_tx)
 
 print("Contains sanctioned addresse(s)?",bitcoin.contains_sanctioned_addresses())
 
 print("total value of transaction in satoshis",bitcoin.total_value())
 print("total value of transaction in bitcoin",bitcoin.total_value(denomination="bitcoin"))
 
-print("Largest individual transfer:",btc.max_single_transfer(denomination="bitcoin"))
-print("Number of recipients:",btc.recipient_count())
+print("Largest individual transfer:",bitcoin..max_single_transfer(denomination="bitcoin"))
+print("Number of recipients:",bitcoin.recipient_count())
 
 print("Satoshis sent to 'bc1...':",bitcoin.value_to("bc1qdugdmvfqrq5qjlw4ta7alen2hdpsekjkjen5xw"))
 print("Bitcoins sent to 'bc1...':",bitcoin.value_to("bc1qdugdmvfqrq5qjlw4ta7alen2hdpsekjkjen5xw",denomination="bitcoin"))
@@ -86,3 +87,18 @@ sudo apt install software-properties-common
 sudo add-apt-repository ppa:ethereum/ethereum
 sudo apt install solc
 ```
+
+### Solana Contexting
+''' Python
+## Currently only supports base64 encoded transactions
+
+from contextooor.sol import Snippets
+encoded_tx="AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAED7JuzdbW/v+WSaCB647gzQXUnhGcBdxwdoOMdnTnatmkqlXfJ6t1HVw9V1KrCNL7Kfnwxlwp4fPQgVuUFwymbvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAe6zoCIOKahUzMQNrDc0UYuk1to62CqqaBIcWay7GjFUBAgIAAQwCAAAAgJaYAAAAAAA="
+
+solana=Snippets(encoded_tx)
+print(solana.native_transfer_value()) ## defaults to lamports
+print(solana.native_transfer_value(denomination="solana"))
+print(solana.native_transfer_value(denomination="usd"))
+
+
+'''

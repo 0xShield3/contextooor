@@ -3,7 +3,7 @@ from contextooor.core.V3_router.V3_router import uniswapV3_router
 from contextooor.core.V2_router.V2_router import uniswapV2_router
 from web3 import Web3
 
-class uniswap:
+class Snippets:
 
     def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),block='latest',suppress_errors=True):
         self.web3=w3

@@ -1,12 +1,12 @@
 import requests
-from uniswap import uniswap
+from eth_uniswap import Snippets
 from web3 import Web3
 import random
 
 class Tests:
     def __init__(self,w3=Web3(Web3.HTTPProvider("https://cloudflare-eth.com/"))):
         self.web3=w3
-        self.uni=uniswap(self.web3,suppress_errors=True)
+        self.uni=Snippets(self.web3,suppress_errors=True)
         self.address_targets=self.uni.SUPPORTED_CONTRACTS.keys()
         self.slippage=self.uni.getSlippage
         self.volatility=self.uni.getVolatility

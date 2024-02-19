@@ -4,7 +4,7 @@ from bitcoin.wallet import CBitcoinAddress
 import polars as pl
 import requests
 
-class BitcoinUtils:
+class Snippets:
     def __init__(self,encoded_btc_tx):
         self.encoded_btc_tx=encoded_btc_tx
         self.decoded_tx_obj=self.decode_transaction()
