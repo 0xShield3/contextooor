@@ -25,7 +25,10 @@ class Snippets:
             amount=self.get_usd_value(amount)
         return amount
 
+    def get_addresses(self,denomination="lamport"):
+        addrs=self.decoded_tx.compile_message().account_keys
+        return [str(addr) for addr in addrs]
+        
 
-
-#print(Snippets("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAED7JuzdbW/v+WSaCB647gzQXUnhGcBdxwdoOMdnTnatmkqlXfJ6t1HVw9V1KrCNL7Kfnwxlwp4fPQgVuUFwymbvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAe6zoCIOKahUzMQNrDc0UYuk1to62CqqaBIcWay7GjFUBAgIAAQwCAAAAgJaYAAAAAAA=").native_transfer_value(denomination="usd"))
+# print(Snippets("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAED7JuzdbW/v+WSaCB647gzQXUnhGcBdxwdoOMdnTnatmkqlXfJ6t1HVw9V1KrCNL7Kfnwxlwp4fPQgVuUFwymbvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAe6zoCIOKahUzMQNrDc0UYuk1to62CqqaBIcWay7GjFUBAgIAAQwCAAAAgJaYAAAAAAA=").native_transfer_value(denomination="usd"))
 
