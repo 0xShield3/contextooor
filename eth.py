@@ -3,6 +3,7 @@ import requests
 import json
 import subprocess
 import os
+import polars as pl
 
 class Snippets:
 
@@ -154,4 +155,105 @@ class Snippets:
                 "confidence": confidence
             })
         return {"summary":summary,"results":parsed_results}
+    
+    def get_normal_tx_history(self,from_address,api_key,current_block_number):
+        url = "https://api.etherscan.io/api"
+        params = {
+            "module": "account",
+            "action": "txlist",
+            "address": from_address,
+            "startblock": 0,
+            "endblock": current_block_number-1,
+            "sort": "asc",
+            "apikey": api_key
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            transactions = response.json()
+            return transactions['result']
+        else:
+            return "Error: Unable to fetch transactions"
+
+    def get_token_tx_history(self,from_address,api_key,current_block_number):
+        url = "https://api.etherscan.io/api"
+        params = {
+            "module": "account",
+            "action": "tokentx",
+            "address": from_address,
+            "startblock": 0,
+            "endblock": current_block_number-1,
+            "sort": "asc",
+            "apikey": api_key
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            transactions = response.json()
+            return transactions['result']
+        else:
+            return "Error: Unable to fetch transactions"
+
+    def get_tx_history(self,from_address,current_block_number):
+        norm=self.get_normal_tx_history(from_address,self.etherscan_api_key,current_block_number)
+        token=self.get_token_tx_history(from_address,self.etherscan_api_key,current_block_number)
+        df_norm=pl.DataFrame(norm).select('from','to','gasUsed','blockNumber')
+        df_token=pl.DataFrame(token).select('from','to','gasUsed','blockNumber')
+        return pl.concat([df_norm,df_token]).lazy()
+
+    def find_matches(self,df, from_address, to_address, first_n, last_n):
+        original_df=df
+        combined_list=\
+            pl.concat([df.select(pl.col.to),df.select(pl.col('from')).rename({'from':'to'})])\
+            .unique()\
+            .rename({'to':'address'})\
+            .filter(pl.col.address!=from_address)\
+            .with_columns(
+                match=
+                pl.when(pl.col.address==to_address).then(pl.lit("exact_match")).otherwise(
+                pl.when(pl.col.address.str.starts_with(to_address[0:first_n+2]) & pl.col.address.str.ends_with(to_address[-last_n:]))\
+                    .then(pl.lit("both"))\
+                    .otherwise(
+                        pl.when(pl.col.address.str.starts_with(to_address[0:first_n+2]))\
+                        .then(pl.lit('start'))
+                        .otherwise(
+                            pl.when(pl.col.address.str.ends_with(to_address[-last_n:]))
+                            .then(pl.lit('end'))
+                            .otherwise(None)
+                ))))\
+            .drop_nulls()\
+        
+        result_df=\
+            pl.concat([
+                original_df.select(['to','gasUsed','blockNumber'])
+                    .rename({'to':'address'}),
+                original_df.select(['from','gasUsed','blockNumber'])
+                    .rename({'from':'address'})
+                ])\
+            .sort('blockNumber','gasUsed',descending=False, nulls_last=True)\
+            .join(combined_list,on="address",how='left')\
+            .drop_nulls()\
+            .collect()   
+        return result_df
+
+    def parse_results(self,result_df,to_address):
+        if result_df.shape[0]==0:
+            previous_interactions=False
+            previous_phishing_attempts=False
+            phishing_likely=False
+        else:
+            different_addresses=result_df.select(pl.col.address).n_unique()
+            first_result=result_df.select(pl.col.match).head(1).item()
+            previous_phishing_attempts=different_addresses!=1
+            previous_interactions=to_address in result_df['address']
+            if first_result=="exact_match":
+                phishing_likely=False
+            if first_result!="exact_match":
+                phishing_likely=True
+        return {"to-address-phishing-likely":phishing_likely, "previously-targetted-to-address":previous_phishing_attempts, "previous-interactions-with-to-address":previous_interactions}
+
+    def is_poisonned_address(self,from_address,to_address, first_n=4, last_n=4, current_block_number=99999999):
+        from_address=from_address.lower()
+        to_address=to_address.lower()
+        df=self.get_tx_history(from_address,current_block_number)
+        matchbook=self.find_matches(df,from_address,to_address,first_n,last_n)
+        return self.parse_results(matchbook,to_address)
     
