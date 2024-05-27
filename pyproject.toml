@@ -1,0 +1,27 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "contextooor"
+
+[tool.flit.sdist]
+include = ["contextooor/*"]
+exclude = ["__pycache__/*","cryo/*","dist/*","env/*","node_modules/*","src/*","target/*"]
+
+[project]
+name = "contextooor"
+authors = [
+    {name = "David Desjardins", email = "david.thegardens@gmail.com"},
+]
+dynamic = ["version", "description"]
+dependencies = [
+  "web3>=6.11.4",
+  "numpy>=1.26.2",
+  "uniswap_universal_router_decoder",
+  "python_bitcoinlib",
+  "polars",
+  "slither-analyzer",
+  "slitherin",
+  "solc-select",
+]
