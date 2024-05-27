@@ -16,38 +16,38 @@ A library to gather more data from your transaction before broadcasting.
 4. Publishing
 Bump the version in __init__.py, then run
 ```
-flit build
-flit publish
+    flit build
+    flit publish
 ```
 
 ## eth_uniswap:
-    - Universal router supports execute, but missing support for the second execute method
-    - Volatility and slippage on all swap methods on V2 router
-    - Other than multicall, slippage and volatility on all swap methods on V3 router
-    - TODO: Transactions directly to pairs, multicall on V3, second execute method on universal router, volatility on universal router, fee accounting on universal router
+- Universal router supports execute, but missing support for the second execute method
+- Volatility and slippage on all swap methods on V2 router
+- Other than multicall, slippage and volatility on all swap methods on V3 router
+- TODO: Transactions directly to pairs, multicall on V3, second execute method on universal router, volatility on universal router, fee accounting on universal router
 
 ## Ethereum:
-    - Converting to USD
-    - Concurrent approvals on a specific token
-    - Concurrent approvals on all tokens
-    - Total amount approved on a specific token (usd or token value)
-    - Total amount approved on all tokens (usd)
-    - Using Forta's attack detector feed labels, is the address a known attacker?
-    - On the fly audits using slither and slitherin detectors
-    - Moooore 
+- Converting to USD
+- Concurrent approvals on a specific token
+- Concurrent approvals on all tokens
+- Total amount approved on a specific token (usd or token value)
+- Total amount approved on all tokens (usd)
+- Using Forta's attack detector feed labels, is the address a known attacker?
+- On the fly audits using slither and slitherin detectors
+- Moooore 
 
 ## Bitcoin:
-    - Decoding to transaction object
-    - Polars dataframe of recipient and their value (aggregated by recipient)
-    - Total value of transaction
-    - Value sent to a specified address
-    - Recipient is in OFAC Sanction list
-    - Largest individual amount sent
-    - Number of recipients
-    - Arbitrary rich contexting with parquet files
+- Decoding to transaction object
+- Polars dataframe of recipient and their value (aggregated by recipient)
+- Total value of transaction
+- Value sent to a specified address
+- Recipient is in OFAC Sanction list
+- Largest individual amount sent
+- Number of recipients
+- Arbitrary rich contexting with parquet files
 ## Solana:
-    - Decoding Base64
-    - Native Value Transfers (lamports/sol/usd)
+- Decoding Base64
+- Native Value Transfers (lamports/sol/usd)
 
 ## How 2 context
 ### EVM Contexting
