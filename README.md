@@ -6,9 +6,9 @@ A library to gather more data from your transaction before broadcasting.
 ## For local development
     1. Fork repo
     2. Clone fork
-    ```git clone https://your-fork-url.com```
+    ``` git clone https://your-fork-url.com ```
     3. Set up venv
-    ```python3.11 -m venv env
+    ``` python3.11 -m venv env
         source env/bin/activate
         pip install flit
         flit install
