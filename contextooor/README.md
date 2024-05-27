@@ -13,6 +13,12 @@ A library to gather more data from your transaction before broadcasting.
         pip install flit
         flit install
     ```
+    4. Publishing
+    Bump the version in __init__.py, then run
+    ```
+    flit build
+    flit publish
+    ```
 
 ## eth_uniswap:
     - Universal router supports execute, but missing support for the second execute method
