@@ -3,6 +3,17 @@ A library to gather more data from your transaction before broadcasting.
 
 ``` pip install contextooor ```
 
+## For local development
+    1. Fork repo
+    2. Clone fork
+    ```git clone https://your-fork-url.com```
+    3. Set up venv
+    ```python3.11 -m venv env
+        source env/bin/activate
+        pip install flit
+        flit install
+    ```
+
 ## eth_uniswap:
     - Universal router supports execute, but missing support for the second execute method
     - Volatility and slippage on all swap methods on V2 router
