@@ -92,4 +92,4 @@ def test_slippage():
         print(slip)
         assert slip==case['expected_result']
 
-test_slippage()
+
