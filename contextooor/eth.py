@@ -267,7 +267,7 @@ class Snippets:
         matchbook=self.find_matches(df,from_address,to_address,first_n,last_n)
         return self.parse_results(matchbook,to_address)
     
-def test_snippets():
+def test_chainalysis():
     api_key = os.getenv('CHAINALYSIS_API_KEY')
     if api_key is None:
         raise ValueError("CHAINALYSIS_API_KEY is not set")
@@ -286,4 +286,3 @@ def test_snippets():
 
       sanction_data = chainalysis.get_sanctioned_address_data(address)
       assert len(sanction_data) == 0
-

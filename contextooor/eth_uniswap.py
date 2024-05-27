@@ -2,6 +2,7 @@ from contextooor.core.universal_router.policies import universal_router
 from contextooor.core.V3_router.V3_router import uniswapV3_router
 from contextooor.core.V2_router.V2_router import uniswapV2_router
 from web3 import Web3
+import requests
 
 class Snippets:
 
@@ -66,6 +67,29 @@ class Snippets:
             else: 
                 raise ValueError(e.args)
 
-        
 
-    
+def get_transaction(tx_hash):
+    url = f"https://api.etherscan.io/api?module=proxy&action=eth_getTransactionByHash&txhash={tx_hash}&apikey=VP84ZNW3VHQ2S9JHE92VYXV96NX9E5U3VU"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception("Failed to fetch transaction data")
+
+def test_slippage():
+    test_transactions=[{"test":"universal-pass","tx_hash":"0xec0e8702b4b47eb8ffd00e6bebcd4fc49407940bd0b8c706b07b2d428b858f2a","expected_result":{'success': 0.018734462880736102}},
+                       {"test":"v3-router-pass","tx_hash":"0xba403decf1e1c2fd5a2e4b05fe2b7d627e417f302240f54f838781b4c09b32ae","expected_result":{'success': 0.005573769978890364}},
+                       {"test":"v3-router-unsupported-method","tx_hash":"0x1d553a00265241c469ee4c13816e0a1d44eda59064e9151fc0255aabe2e30e4d","expected_result":{'error': ('Method ID 0xac9650d8 not currently supported',)}},
+                       {"test":"v2-router-pass","tx_hash":"0x8c1b8a2a725732ed3c25d59b75d9341be4cfdc28290a586af4d14a2b0c98bfd3","expected_result":{'success': 0.004669577023805327}},
+                       {"test":"v2-router-pass_low_liquidity","tx_hash":"0xc663a7077093e802530625ed7aa7ea8786aa843b3830d8dbbe8d2435f4d07429","expected_result":{'success': -3093319975.3551455}}]
+    for case in test_transactions:
+        hash=case['tx_hash']
+        tx=get_transaction(hash)['result']
+        block_number=int(tx['blockNumber'],16)
+        value=int(tx['blockNumber'],16)
+        sn=Snippets(block=block_number-1)
+        slip=sn.getSlippage(to_address=tx['to'],input_data=tx['input'],value=value)
+        print(slip)
+        assert slip==case['expected_result']
+
+test_slippage()

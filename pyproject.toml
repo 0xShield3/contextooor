@@ -24,4 +24,5 @@ dependencies = [
   "slither-analyzer",
   "slitherin",
   "solc-select",
+  "pytest"
 ]
