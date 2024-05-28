@@ -1,7 +1,6 @@
 from web3 import Web3
 import requests
 import math
-import numpy as np
 from contextooor.core.safe_math import SafeMath
 
 class uniswapV2_router:
@@ -112,7 +111,7 @@ class uniswapV2_router:
                 else:
                     prices[str(block)]=optimal_rate
         log_returns = [math.log(price / list(prices.values())[i - 1]) for i, price in enumerate(list(prices.values()))]
-        return np.std(log_returns)
+        return SafeMath.standard_dev(log_returns)
 
     def getSlippage(self,input_data,value=None):
         method=input_data[0:10]

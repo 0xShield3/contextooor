@@ -3,6 +3,15 @@ class SafeMath:
     def __init__(self):
         pass
 
+    def standard_dev(self,list_):
+        length=len(list_)
+        total=total(list_)
+        xbar=total/length
+        sumsqr=0
+        for num in list_:
+            sumsqr+=(num-xbar)**2
+        return (sumsqr/length)**0.5
+
     def safe_division(self,numerator,denominator):
         ## SAFE MATH   
             ## inf/inf  -> evaluate normally

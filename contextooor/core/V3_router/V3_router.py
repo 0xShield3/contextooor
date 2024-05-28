@@ -1,6 +1,5 @@
 from web3 import Web3
 import math
-import numpy as np
 from contextooor.core.safe_math import SafeMath
 
 class uniswapV3_router:
@@ -80,7 +79,7 @@ class uniswapV3_router:
             prices.append(price)
 
         log_returns = [math.log(price / prices[i - 1]) for i, price in enumerate(prices)]
-        return np.std(log_returns)
+        return SafeMath.standard_dev(log_returns)
     
     def full_decode(self,input_data):
         partially_decoded=self.router_contract.decode_function_input(input_data)
@@ -101,7 +100,7 @@ class uniswapV3_router:
             optimal_rate=SafeMath().safe_exponent(self.getRate(token0,token1,fee,block),inverse)
             running_rate=running_rate*optimal_rate*(1-(fee/1000000))
         return running_rate
-    
+
     def get_path_volatility(self,input_data,block_depth=100):
         prices=[]
         decoded=self.full_decode(input_data)
@@ -110,7 +109,7 @@ class uniswapV3_router:
             actual_rate=self.get_optimal_path_rate(decoded["path"],block)
             prices.append(actual_rate)
         log_returns = [math.log(price / prices[i - 1]) for i, price in enumerate(prices)]
-        return np.std(log_returns)
+        return SafeMath.standard_dev(log_returns)
 
     def getSlippage_path_input(self,input_data):
         decoded=self.full_decode(input_data)
