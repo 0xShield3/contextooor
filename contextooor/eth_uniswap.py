@@ -24,12 +24,10 @@ class Snippets:
                                     '0xE592427A0AEce92De3Edee1F18E0157C05861564':
                                         {'name':'uniswap_v3_router',
                                          'slippage_function':self.uniswapV3_router.getSlippage,
-                                         'volatility_function':self.uniswapV3_router.getVolatility,
                                          'SUPPORTED_METHODS':list(self.uniswapV3_router.SUPPORTED_METHODS.keys())},
                                     '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D':
                                         {'name':'uniswap_v2_router',
                                          'slippage_function':self.uniswapV2_router.getSlippage,
-                                         'volatility_function':self.uniswapV2_router.getVolatility,
                                          'SUPPORTED_METHODS':list(self.uniswapV2_router.SUPPORTED_METHODS.keys())}
                                     }
         self.suppress_errors=suppress_errors
@@ -51,21 +49,6 @@ class Snippets:
                 raise ValueError(e.args)
         
     
-    def getVolatility(self,to_address,input_data,block_depth=10):
-        try:
-            to_address=self.web3.to_checksum_address(to_address)
-            if to_address not in self.SUPPORTED_CONTRACTS.keys():
-                raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router and supported.")
-            data=self.SUPPORTED_CONTRACTS[to_address]
-            if 'volatility_function' not in data.keys():
-                raise ValueError(f"This volatility cannot be interpolated from this address.  Currently this can only be done on the V2 and V3 routers")
-            function=data['volatility_function']
-            return {'success':function(input_data,block_depth)}
-        except ValueError as e:
-            if self.suppress_errors:
-                return {"error":e.args}
-            else: 
-                raise ValueError(e.args)
 
 
 def get_transaction(tx_hash):

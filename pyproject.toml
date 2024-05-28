@@ -17,7 +17,6 @@ authors = [
 dynamic = ["version", "description"]
 dependencies = [
   "web3>=6.11.4",
-  "numpy>=1.26.2",
   "uniswap_universal_router_decoder",
   "python_bitcoinlib",
   "slither-analyzer",

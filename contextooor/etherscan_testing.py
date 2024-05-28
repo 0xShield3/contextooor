@@ -9,7 +9,6 @@ class Tests:
         self.uni=Snippets(self.web3,suppress_errors=True)
         self.address_targets=self.uni.SUPPORTED_CONTRACTS.keys()
         self.slippage=self.uni.getSlippage
-        self.volatility=self.uni.getVolatility
 
     def get_transactions_by_addresses(self,addresses,depth,api_key="VP84ZNW3VHQ2S9JHE92VYXV96NX9E5U3VU"):
         big_tx=[]
@@ -28,12 +27,10 @@ class Tests:
     def expected_result(self,tx):
         data=self.uni.SUPPORTED_CONTRACTS[tx['to']]
         if tx['input'][0:10] in data['SUPPORTED_METHODS']:
-            volatility='volatility_function' in data.keys()
             slippage='slippage_function' in data.keys()
         else: 
-            volatility=False
             slippage=False
-        return {'volatility':volatility,'slippage':slippage,'method':tx['input'][0:10],'name':data['name']}
+        return {'slippage':slippage,'method':tx['input'][0:10],'name':data['name']}
 
 
     def test_transactions(self):
@@ -45,9 +42,6 @@ class Tests:
             slippage=self.slippage(tx["to"],tx["input"],tx["value"])
             slippage_is_err=slippage==None
             print("slippage:",slippage,expected_result['slippage'])
-            if "volatility_function" in self.uni.SUPPORTED_CONTRACTS[tx["to"]].keys():
-                volatility=self.volatility(tx['to'],tx['input'])
-                print("volatility:",volatility,expected_result['volatility'])
             print(expected_result)
             print("_____________________________________")
 
