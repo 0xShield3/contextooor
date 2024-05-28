@@ -3,7 +3,6 @@ import requests
 import json
 import subprocess
 import os
-import polars as pl
 from contextooor.core.Chainalysis.chainalysis_ofac_api import Chainalysis
 
 DEMO_SANCTIONED_ADDRESSES=["1JHdQHkBZiim1cb4hyUh2PbzEbbg6z2Trf", "0x01e2919679362dFBC9ee1644Ba9C6da6D6245BB1"]
@@ -12,8 +11,9 @@ DEMO_NON_SANCTIONED_ADDRESSES=["bc1p7pztjz9qyupr8ztwqy2y3yl7u6y2nvfna3g54rq3s3d7
 
 class Snippets:
 
-    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),etherscan_api_key="PGJ5AYE9WGD77YPS4F3NGQ33MB5YI7JYS8"):
+    def __init__(self,w3=Web3(Web3.HTTPProvider("https://eth.public-rpc.com")),etherscan_api_key="PGJ5AYE9WGD77YPS4F3NGQ33MB5YI7JYS8",chainalysis_api_key=""):
         self.etherscan_api_key=etherscan_api_key
+        self.chainalysis_api_key=chainalysis_api_key
         self.web3=w3
         try:
             self.web3.eth.get_block_number()
@@ -33,8 +33,10 @@ class Snippets:
             return True
         return False
         
-    def is_sanctioned(self,chainalysis_api_key,address):
-        chainalysis = Chainalysis(chainalysis_api_key)
+    def is_sanctioned(self,address):
+        if self.chainalysis_api_key=="":
+            raise ValueError("Chainalysis API key is not set")
+        chainalysis = Chainalysis(self.chainalysis_api_key)
         is_sanctioned = chainalysis.is_sanctioned(address)
         return is_sanctioned
 
@@ -202,70 +204,6 @@ class Snippets:
         else:
             return "Error: Unable to fetch transactions"
 
-    def get_tx_history(self,from_address,current_block_number):
-        norm=self.get_normal_tx_history(from_address,self.etherscan_api_key,current_block_number)
-        token=self.get_token_tx_history(from_address,self.etherscan_api_key,current_block_number)
-        df_norm=pl.DataFrame(norm).select('from','to','gasUsed','blockNumber')
-        df_token=pl.DataFrame(token).select('from','to','gasUsed','blockNumber')
-        return pl.concat([df_norm,df_token]).lazy()
-
-    def find_matches(self,df, from_address, to_address, first_n, last_n):
-        original_df=df
-        combined_list=\
-            pl.concat([df.select(pl.col.to),df.select(pl.col('from')).rename({'from':'to'})])\
-            .unique()\
-            .rename({'to':'address'})\
-            .filter(pl.col.address!=from_address)\
-            .with_columns(
-                match=
-                pl.when(pl.col.address==to_address).then(pl.lit("exact_match")).otherwise(
-                pl.when(pl.col.address.str.starts_with(to_address[0:first_n+2]) & pl.col.address.str.ends_with(to_address[-last_n:]))\
-                    .then(pl.lit("both"))\
-                    .otherwise(
-                        pl.when(pl.col.address.str.starts_with(to_address[0:first_n+2]))\
-                        .then(pl.lit('start'))
-                        .otherwise(
-                            pl.when(pl.col.address.str.ends_with(to_address[-last_n:]))
-                            .then(pl.lit('end'))
-                            .otherwise(None)
-                ))))\
-            .drop_nulls()\
-        
-        result_df=\
-            pl.concat([
-                original_df.select(['to','gasUsed','blockNumber'])
-                    .rename({'to':'address'}),
-                original_df.select(['from','gasUsed','blockNumber'])
-                    .rename({'from':'address'})
-                ])\
-            .sort('blockNumber','gasUsed',descending=False, nulls_last=True)\
-            .join(combined_list,on="address",how='left')\
-            .drop_nulls()\
-            .collect()   
-        return result_df
-
-    def parse_results(self,result_df,to_address):
-        if result_df.shape[0]==0:
-            previous_interactions=False
-            previous_phishing_attempts=False
-            phishing_likely=False
-        else:
-            different_addresses=result_df.select(pl.col.address).n_unique()
-            first_result=result_df.select(pl.col.match).head(1).item()
-            previous_phishing_attempts=different_addresses!=1
-            previous_interactions=to_address in result_df['address']
-            if first_result=="exact_match":
-                phishing_likely=False
-            if first_result!="exact_match":
-                phishing_likely=True
-        return {"to-address-phishing-likely":phishing_likely, "previously-targetted-to-address":previous_phishing_attempts, "previous-interactions-with-to-address":previous_interactions}
-
-    def is_poisonned_address(self,from_address,to_address, first_n=4, last_n=4, current_block_number=99999999):
-        from_address=from_address.lower()
-        to_address=to_address.lower()
-        df=self.get_tx_history(from_address,current_block_number)
-        matchbook=self.find_matches(df,from_address,to_address,first_n,last_n)
-        return self.parse_results(matchbook,to_address)
     
 def test_chainalysis():
     api_key = os.getenv('CHAINALYSIS_API_KEY')
