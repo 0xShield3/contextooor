@@ -18,5 +18,6 @@ dynamic = ["version", "description"]
 dependencies = [
   "web3>=6.11.4",
   "uniswap_universal_router_decoder",
-  "pytest"
+  "pytest",
+  "requests"
 ]

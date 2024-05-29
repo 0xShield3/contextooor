@@ -8,10 +8,11 @@ A library to gather more data from your transaction before broadcasting.
 2. Clone fork
 ``` git clone https://your-fork-url.com ```
 3. Set up venv
-``` python3.11 -m venv env
+``` 
+    python3.11 -m venv env
     source env/bin/activate
-    pip install flit
-    flit install
+    cd dir/to/pyproject
+    pip install -e .
 ```
 4. Publishing
 Bump the version in __init__.py, then run
