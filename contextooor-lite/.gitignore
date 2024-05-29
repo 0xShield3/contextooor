@@ -1,0 +1,14 @@
+env/
+contextooor/sol.py
+/wip/*
+/data/*
+/node_modules
+# Added by cargo
+/dist
+
+/target
+.env
+pull_tokens.py
+
+.pytest_cache
+__pycache__
