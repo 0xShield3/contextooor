@@ -10,7 +10,7 @@ include = ["contextooor/*"]
 exclude = ["__pycache__/*","cryo/*","dist/*","env/*","node_modules/*","src/*","target/*"]
 
 [project]
-name = "contextooor"
+name = "contextooor-uniswap"
 authors = [
     {name = "David Desjardins", email = "david.thegardens@gmail.com"},
 ]
