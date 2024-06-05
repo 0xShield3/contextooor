@@ -1,7 +1,6 @@
 from bitcoin.core import CTransaction
 from bitcoin.core.script import CScript
 from bitcoin.wallet import CBitcoinAddress
-from contextooor.chainalysis_ofac_api import Chainalysis
 import polars as pl
 import requests
 import os
@@ -16,11 +15,6 @@ class Snippets:
         self.encoded_btc_tx=encoded_btc_tx
         self.decoded_tx_obj=self.decode_transaction()
         self.decoded_dataframe=self.get_frame()
-
-    def is_sanctioned(self,chainalysis_api_key,address):
-        chainalysis = Chainalysis(chainalysis_api_key)
-        is_sanctioned = chainalysis.is_sanctioned(address)
-        return is_sanctioned
         
     def decode_script(self,script_hex):
         script = CScript(script_hex)
@@ -91,25 +85,6 @@ class Snippets:
         value=float(satoshis)*float(value["coins"]["coingecko:bitcoin"]['price'])/(10**8)
         return value
     
-def test_chainalysis():
-    api_key = os.getenv('CHAINALYSIS_API_KEY')
-    if api_key is None:
-        raise ValueError("CHAINALYSIS_API_KEY is not set")
-
-    chainalysis = Chainalysis(api_key)
-    for address in DEMO_SANCTIONED_ADDRESSES:
-      is_sanctioned = chainalysis.is_sanctioned(address)
-      assert is_sanctioned == True
-      
-      sanction_data = chainalysis.get_sanctioned_address_data(address)
-      assert sanction_data[0]["category"] == "sanctioned entity"
-      
-    for address in DEMO_NON_SANCTIONED_ADDRESSES:
-      is_sanctioned = chainalysis.is_sanctioned(address)
-      assert is_sanctioned == False
-
-      sanction_data = chainalysis.get_sanctioned_address_data(address)
-      assert len(sanction_data) == 0
 
 
 # # ### Example usage
