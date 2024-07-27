@@ -1,3 +1,4 @@
 from contextooor import eth_uniswap
+from uniswap_universal_router_decoder import RouterCodec
 
-eth_uniswap.test_slippage()
+eth_uniswap.test_routers_on_all_chains()

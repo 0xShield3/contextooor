@@ -60,9 +60,11 @@ class uniswapV3_router:
         in_token=input_data[34:74]
         out_token=input_data[98:138]
         token0,token1,inverse=self.align_tokens_inverse(in_token,out_token)
-        fee=int.from_bytes(bytes.fromhex(input_data[198:202]))
-        amount_in=int.from_bytes(bytes.fromhex(input_data[330:394]))
-        amount_out=int.from_bytes(bytes.fromhex(input_data[394:458]))
+        decoded=dict(self.router_contract.decode_function_input(input_data)[1]['params'])
+        fee=decoded['fee']
+        values=list(decoded.values())
+        amount_in=values[-3]
+        amount_out=values[-2]
         exchange_rate=SafeMath().safe_exponent(self.safe_division(amount_out,amount_in),inverse)
         return "0x"+token0,"0x"+token1,fee,exchange_rate,inverse
 

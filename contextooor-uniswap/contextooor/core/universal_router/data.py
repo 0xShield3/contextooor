@@ -13,7 +13,7 @@ class Data:
             'V3_SWAP_EXACT_OUT': UniswapV3(),
         }
 
-        self.SUPPORTED_METHODS=['0x3593564c']
+        self.SUPPORTED_METHODS=['0x3593564c','0x24856bc3']
 
     def get_bridge_routes(self,data):
         bridge_routes=[]
@@ -123,7 +123,6 @@ class Data:
 
     def get_potential_slippage(self,web3,trx_input,block):
         method_name=trx_input[0:10]
-        
         if  method_name not in self.SUPPORTED_METHODS:
             raise ValueError(f'Unsupported Method: {method_name}')
         

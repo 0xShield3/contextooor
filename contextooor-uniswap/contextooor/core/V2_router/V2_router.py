@@ -47,7 +47,11 @@ class uniswapV2_router:
                 break
             token0,token1,inverse=self.align_tokens_inverse(k,path[j+1])
             pair_addr=self.factory_contract.functions.getPair(token0,token1).call()
+            if pair_addr=="0x0000000000000000000000000000000000000000":
+                raise ValueError(f"There is no pool for the tokens attempting to be swapped ({token0} and {token1}.) This transaction will likely fail.")
+            print('v2-router-1')
             reserves=self.web3.eth.contract(pair_addr,abi=self.pair_abi).functions.getReserves().call(block_identifier=self.block)
+            print('v2-router-2')
             optimal_rate=SafeMath().safe_exponent(self.safe_division(reserves[1],reserves[0]),inverse)
             running_rate=running_rate*optimal_rate*0.997
         return running_rate
@@ -96,6 +100,7 @@ class uniswapV2_router:
                 break
             token0,token1,inverse=self.align_tokens_inverse(k,path[j+1])
             pair_addr=self.factory_contract.functions.getPair(token0,token1).call()
+            print('v2-router-3')
             pairs.append(pair_addr)
         if self.block=="latest":
             latest_block = self.web3.eth.get_block_number()
@@ -106,6 +111,7 @@ class uniswapV2_router:
             contract=self.web3.eth.contract(pair,abi=self.pair_abi).functions.getReserves()
             for block in range(latest_block - (block_depth-1), latest_block):
                 reserves=contract.call(block_identifier=block)
+                print('v2-router-4')
                 optimal_rate=(reserves[1]/reserves[0])
                 if str(block) in prices.keys():
                     prices[str(block)]=prices[str(block)]*optimal_rate

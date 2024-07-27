@@ -11,7 +11,10 @@ class Addresses:
                'v2factory':"0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
                'v3router_1':"0xE592427A0AEce92De3Edee1F18E0157C05861564",
                'v3router_2':"0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
-               'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984"}, 
+               'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984",
+               'scanner':"api.etherscan.io",
+               'scanner_api_key':"PGJ5AYE9WGD77YPS4F3NGQ33MB5YI7JYS8",
+               'rpc':'https://ethereum-rpc.publicnode.com'},
             
             #sepolia
             11155111:{'universal':["0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD"],
@@ -19,7 +22,10 @@ class Addresses:
                 'v2factory':"0xB7f907f7A9eBC822a80BD25E224be42Ce0A698A0",
                 'v3router_1':None,
                 'v3router_2':"0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E",
-                'v3factory':"0x0227628f3F023bb0B980b67D528571c95c6DaC1c"}, 
+                'v3factory':"0x0227628f3F023bb0B980b67D528571c95c6DaC1c",
+                'scanner':"api-sepolia.etherscan.io",
+                'scanner_api_key':"PGJ5AYE9WGD77YPS4F3NGQ33MB5YI7JYS8",
+                'rpc':'https://eth-sepolia.g.alchemy.com/v2/gtyhfTVgRS5Yg5mkWaFmMYShFCflvKkl'}, 
 
             #polygon
             137:{'universal':["0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5","0x643770E279d5D0733F21d6DC03A8efbABf3255B4","0xec7BE89e9d109e7e3Fec59c222CF297125FEFda2"],
@@ -27,7 +33,10 @@ class Addresses:
                 'v2factory':"0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C",
                 'v3router_1':"0xE592427A0AEce92De3Edee1F18E0157C05861564",
                 'v3router_2':"0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
-                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984"},  
+                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984",
+                'scanner':"api.polygonscan.com",
+                'scanner_api_key':"BPPIQUAWXX11AUP312KQ6M9IQF1GX7YAN5",
+                'rpc':'https://polygon.api.onfinality.io/public'},  
                     
             # 80002:{'universal':[],
             #     'v2router':[],
@@ -40,7 +49,10 @@ class Addresses:
                 'v2factory':"0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf",
                 'v3router_1':"0xE592427A0AEce92De3Edee1F18E0157C05861564",
                 'v3router_2':"0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
-                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984"},
+                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984",
+                'scanner':"api-optimistic.etherscan.io",
+                'scanner_api_key':"Y6FKNCFHZ84Y74ZD49R6CT7N2VGB2EDGNT",
+                'rpc':'https://optimism-rpc.publicnode.com'},
                 
             # 11155420:{'universal':["0xD5bBa708b39537d33F2812E5Ea032622456F1A95"],
             #     'v2router':[],
@@ -66,7 +78,10 @@ class Addresses:
                 'v2factory':"0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
                 'v3router_1':None,
                 'v3router_2':"0xB971eF87ede563556b2ED4b1C0b0019111Dd85d2",
-                'v3factory':"0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7"},
+                'v3factory':"0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7",
+                'scanner':"api.bscscan.com",
+                'scanner_api_key':"3CANUWB7DPMQW1GG5AJYIXVQKRREAZPZNK",
+                'rpc':'https://bsc-rpc.publicnode.com'},
 
             #base 
             8453:{'universal':["0xeC8B0F7Ffe3ae75d7FfAb09429e3675bb63503e4","0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD"],
@@ -74,7 +89,10 @@ class Addresses:
                 'v2factory':"0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
                 'v3router_1':None,
                 'v3router_2':"0x2626664c2603336E57B271c5C0b26F421741e481",
-                'v3factory':"0x33128a8fC17869897dcE68Ed026d694621f6FDfD"}, 
+                'v3factory':"0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
+                'scanner':"api.basescan.org",
+                'scanner_api_key':"NRT1PZS36URXP3P7ME2SYBFG6NMD18CZT6",
+                'rpc':'https://base-rpc.publicnode.com'}, 
 
             # 84532:{'universal':"0x050E797f3625EC8785265e1d9BDd4799b97528A1",
             #     'v2router':[],
@@ -88,7 +106,10 @@ class Addresses:
                 'v2factory':"0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C",
                 'v3router_1':None,
                 'v3router_2':"0xbb00FF08d01D300023C629E8fFfFcb65A5a578cE",
-                'v3factory':"0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD"}, 
+                'v3factory':"0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD",
+                'scanner':None,
+                'scanner_api_key':None,
+                'rpc':'https://avalanche.drpc.org'}, 
 
             #arbitrum one
             42161:{'universal':["0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5","0xeC8B0F7Ffe3ae75d7FfAb09429e3675bb63503e4","0x5E325eDA8064b456f4781070C0738d849c824258"],
@@ -96,7 +117,10 @@ class Addresses:
                 'v2factory':"0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9",
                 'v3router_1':None,
                 'v3router_2':"0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
-                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984"}, 
+                'v3factory':"0x1F98431c8aD98523631AE4a59f267346ea31F984",
+                'scanner':"api.arbiscan.io",
+                'scanner_api_key':"TVGA4HW9JYJECRTG2X4QNAICG87E552H59",
+                'rpc':'https://arbitrum-one.publicnode.com'}, 
 
             # 421614:{'universal':["0x4A7b5Da61326A6379179b40d00F57E5bbDC962c2"],
             #     'v2router':[],
@@ -108,7 +132,7 @@ class Addresses:
         if self.chain not in self.addresses_dict.keys():
             raise ValueError("chain is not supported")
         
-        self.addresses=self.addresses[self.chain]
+        self.addresses=self.addresses_dict[self.chain]
         self.universal=self.addresses['universal']
         self.v2router=self.addresses['v2router']
         self.v2factory=self.addresses['v2factory']
@@ -128,8 +152,10 @@ class Addresses:
         address=self.w3.to_checksum_address(address)
         if address in self.universal:
             return 'universal_router'
-        if address in self.v3router:
-            return 'v3_router'
+        if address == self.v3router_1:
+            return 'v3_router_1'
+        if address == self.v3router_2:
+            return 'v3_router_2'
         if address == self.v2router:
             return 'v2_router'
         return None

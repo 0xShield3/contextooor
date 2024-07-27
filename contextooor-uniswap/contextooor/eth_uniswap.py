@@ -38,14 +38,17 @@ class Snippets:
     
     def getSlippage(self,to_address,input_data,value=None):
         try:
-            to_address=self.web3.to_checksum_address(to_address) 
+            to_address=self.web3.to_checksum_address(to_address)
             router=self.addrs.whichRouter(to_address)
+            if router[:-2]=='v3_router':
+                version="v3_router"
+            else:
+                version=router
 
             if router==None:
                 raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router are supported.")
             
-
-            data=self.SUPPORTED_CONTRACTS[router]
+            data=self.SUPPORTED_CONTRACTS[version]
             function=data['slippage_function']
             if router=='v2_router':
                 return {"success":function(input_data,value)}
@@ -57,7 +60,7 @@ class Snippets:
         except ValueError as e:
             if self.suppress_errors:
                 return {"error":e.args}
-            else: 
+            else:
                 raise ValueError(e.args)
         
     
@@ -78,25 +81,75 @@ class Snippets:
                 raise ValueError(e.args)
 
 
-def get_transaction(tx_hash):
-    url = f"https://api.etherscan.io/api?module=proxy&action=eth_getTransactionByHash&txhash={tx_hash}&apikey=VP84ZNW3VHQ2S9JHE92VYXV96NX9E5U3VU"
+def get_transaction(tx_hash,chain):
+    domain=Addresses()[chain].addresses_dict['scanner']
+    key=Addresses()[chain].addresses_dict['scanner_api_key']
+    url = f"https://api.{domain}/api?module=proxy&action=eth_getTransactionByHash&txhash={tx_hash}&apikey={key}"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     else:
         raise Exception("Failed to fetch transaction data")
 
+def get_transactions_to_address(address,domain,api_key,tx_count=5):
+    url = f"https://{domain}/api"
+    params = {
+        "module": "account",
+        "action": "txlist",
+        "address": address,
+        "startblock": 0,
+        "endblock": 99999999,
+        "sort": "desc",
+        "page":1,
+        "offset":tx_count,
+        "apikey": api_key
+    }
+    
+    response = requests.get(url, params=params)
+    data = response.json()
+    
+    if data["status"] == "1":
+        transactions = data["result"]
+        return [tx for tx in transactions if tx["to"].lower() == address.lower()]
+    else:
+        raise Exception(f"Error fetching transactions: {data['message']}")
+
+def test_routers_on_all_chains():
+    chain_data=Addresses().addresses_dict.items()
+    for chain,data in chain_data:
+        # if chain not in [11155111]:
+        #     continue
+        rpc=Web3(Web3.HTTPProvider(data['rpc']))
+        # sn=Snippets(rpc)
+        addrs=Addresses(rpc)
+        routers=addrs.universal
+        routers.append(addrs.v2router)
+        routers.append(addrs.v3router_1)
+        routers.append(addrs.v3router_2)
+        for router in routers:
+            if router==None or data['scanner']==None:
+                continue
+            txs=get_transactions_to_address(router,data['scanner'],data['scanner_api_key'])
+            for tx in txs:
+                try:
+                    sn=Snippets(block=int(tx['blockNumber'])-1,w3=rpc,suppress_errors=False)
+                    slip=sn.getSlippage(to_address=tx['to'],input_data=tx['input'],value=int(tx['value']))
+                    print(chain,router,slip,tx['hash'])
+                except Exception as e:
+                    print(chain,tx['hash'],e)
+
 def test_slippage():
     test_transactions=[{"test":"universal-pass","tx_hash":"0xec0e8702b4b47eb8ffd00e6bebcd4fc49407940bd0b8c706b07b2d428b858f2a","expected_result":{'success': 0.018734462880736102}},
-                       {"test":"v3-router-pass","tx_hash":"0xba403decf1e1c2fd5a2e4b05fe2b7d627e417f302240f54f838781b4c09b32ae","expected_result":{'success': 0.005573769978890364}},
-                       {"test":"v3-router-unsupported-method","tx_hash":"0x1d553a00265241c469ee4c13816e0a1d44eda59064e9151fc0255aabe2e30e4d","expected_result":{'error': ('Method ID 0xac9650d8 not currently supported',)}},
+                       {"test":"v3-router1-pass","tx_hash":"0xba403decf1e1c2fd5a2e4b05fe2b7d627e417f302240f54f838781b4c09b32ae","expected_result":{'success': 0.005573769978890364}},
+                       {"test":"v3-router1-unsupported-method","tx_hash":"0x1d553a00265241c469ee4c13816e0a1d44eda59064e9151fc0255aabe2e30e4d","expected_result":{'error': ('Method ID 0xac9650d8 not currently supported',)}},
                        {"test":"v2-router-pass","tx_hash":"0x8c1b8a2a725732ed3c25d59b75d9341be4cfdc28290a586af4d14a2b0c98bfd3","expected_result":{'success': 0.004669577023805327}},
-                       {"test":"v2-router-pass_low_liquidity","tx_hash":"0xc663a7077093e802530625ed7aa7ea8786aa843b3830d8dbbe8d2435f4d07429","expected_result":{'success': -3093319975.3551455}}]
+                       {"test":"v2-router-pass_low_liquidity","tx_hash":"0xc663a7077093e802530625ed7aa7ea8786aa843b3830d8dbbe8d2435f4d07429","expected_result":{'success': -3093319975.3551455}},
+                       {"test":"v3-router2-exact-input-single","tx_hash":"0x1ef2ae853b4c68f863807ea4367d0ad2dfbfa07cee12b3a08de9405e5f0b08d9","expected_result":{'success': -3093319975.3551455}}]
     for case in test_transactions:
         hash=case['tx_hash']
-        tx=get_transaction(hash)['result']
+        tx=get_transaction(hash,case['chain_id'])['result']
         block_number=int(tx['blockNumber'],16)
-        value=int(tx['blockNumber'],16)
+        value=int(tx['value'],16)
         sn=Snippets(block=block_number-1)
         slip=sn.getSlippage(to_address=tx['to'],input_data=tx['input'],value=value)
         print(slip)
