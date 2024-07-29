@@ -13,23 +13,27 @@ class Data:
             'V3_SWAP_EXACT_OUT': UniswapV3(),
         }
 
-        self.SUPPORTED_METHODS=['0x3593564c','0x24856bc3']
+        self.SUPPORTED_METHODS=['0x24856bc3'] #should add support for method with deadline '0x3593564c'
 
     def get_bridge_routes(self,data):
         bridge_routes=[]
         all_items=[]
+
         for i in range(0,len(data)-1):
             ## check recipient, if it is a valid address, this means this route is the sender in a bridged route.
             if data[i][1]['recipient'] in ["0x0000000000000000000000000000000000000001","0x0000000000000000000000000000000000000002"]:
                 continue
             ## set sender idx
             from_idx=i
+            
             ## loop through routes to find receiver
+            print(data)
             for j in range(0,len(data)):
                 if list(data[j][2].keys())[0]==data[i][1]['recipient']:
                     to_idx=j
                     break
-
+            
+            print(all_items)
             ##check if sender is already part of a known bridged route, insert if it is
             if from_idx in all_items:
                 for routes in bridge_routes:
@@ -42,6 +46,7 @@ class Data:
                 if to_idx not in all_items:
                     all_items.append(to_idx)
                 bridge_routes.append([from_idx,to_idx])
+            print(bridge_routes)
         return bridge_routes,all_items
     
     def get_easy_slippage(self,web3,data,amount_in=None,block="latest"):
@@ -54,6 +59,7 @@ class Data:
         for route in bridge_routes:
             running_unslippage=1
             amount_in=None
+
             for idx,inner_route in enumerate(route):
                 this_route_data=data[inner_route]
                 slippage_dict=self.get_easy_slippage(web3,this_route_data,amount_in=amount_in,block=block)

@@ -40,14 +40,19 @@ class Snippets:
         try:
             to_address=self.web3.to_checksum_address(to_address)
             router=self.addrs.whichRouter(to_address)
+
+
+            if router==None:
+                raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router are supported.")
+            
+            if router=='v3_router_1' and self.addrs.chain==10:
+                raise ValueError("There is currently an unknown error causing uniswap transactions to router 1 to fail decoding.")
+
             if router[:-2]=='v3_router':
                 version="v3_router"
             else:
                 version=router
 
-            if router==None:
-                raise ValueError(f"This address is not a supported address. Currently, only the universal router, V3 router, and V2 router are supported.")
-            
             data=self.SUPPORTED_CONTRACTS[version]
             function=data['slippage_function']
             if router=='v2_router':
@@ -114,11 +119,11 @@ def get_transactions_to_address(address,domain,api_key,tx_count=5):
     else:
         raise Exception(f"Error fetching transactions: {data['message']}")
 
-def test_routers_on_all_chains():
+def test_routers_on_all_chains(suppress_errors=True):
     chain_data=Addresses().addresses_dict.items()
     for chain,data in chain_data:
-        # if chain not in [11155111]:
-        #     continue
+        if chain not in [8453]:
+            continue
         rpc=Web3(Web3.HTTPProvider(data['rpc']))
         # sn=Snippets(rpc)
         addrs=Addresses(rpc)
@@ -131,12 +136,12 @@ def test_routers_on_all_chains():
                 continue
             txs=get_transactions_to_address(router,data['scanner'],data['scanner_api_key'])
             for tx in txs:
-                try:
-                    sn=Snippets(block=int(tx['blockNumber'])-1,w3=rpc,suppress_errors=False)
-                    slip=sn.getSlippage(to_address=tx['to'],input_data=tx['input'],value=int(tx['value']))
-                    print(chain,router,slip,tx['hash'])
-                except Exception as e:
-                    print(chain,tx['hash'],e)
+                # try:
+                sn=Snippets(block=int(tx['blockNumber'])-1,w3=rpc,suppress_errors=suppress_errors)
+                slip=sn.getSlippage(to_address=tx['to'],input_data=tx['input'],value=int(tx['value']))
+                print(chain,router,slip,tx['hash'])
+                # except Exception as e:
+                #     print(chain,tx['hash'],e)
 
 def test_slippage():
     test_transactions=[{"test":"universal-pass","tx_hash":"0xec0e8702b4b47eb8ffd00e6bebcd4fc49407940bd0b8c706b07b2d428b858f2a","expected_result":{'success': 0.018734462880736102}},

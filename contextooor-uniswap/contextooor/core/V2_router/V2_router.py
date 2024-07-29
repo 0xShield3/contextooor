@@ -49,9 +49,12 @@ class uniswapV2_router:
             pair_addr=self.factory_contract.functions.getPair(token0,token1).call()
             if pair_addr=="0x0000000000000000000000000000000000000000":
                 raise ValueError(f"There is no pool for the tokens attempting to be swapped ({token0} and {token1}.) This transaction will likely fail.")
-            print('v2-router-1')
-            reserves=self.web3.eth.contract(pair_addr,abi=self.pair_abi).functions.getReserves().call(block_identifier=self.block)
-            print('v2-router-2')
+            try:
+                reserves=self.web3.eth.contract(pair_addr,abi=self.pair_abi).functions.getReserves().call(block_identifier=self.block)
+            except ValueError as e:
+                print(e.args[0]['message'][0:17])
+                if e.args[0]['message'][0:17]=="missing trie node":
+                    raise ValueError("You are using a full node, and you are trying to access state that has been pruned. Use an archive node, or request state at a different block.")
             optimal_rate=SafeMath().safe_exponent(self.safe_division(reserves[1],reserves[0]),inverse)
             running_rate=running_rate*optimal_rate*0.997
         return running_rate
@@ -110,7 +113,12 @@ class uniswapV2_router:
         for pair in pairs:    
             contract=self.web3.eth.contract(pair,abi=self.pair_abi).functions.getReserves()
             for block in range(latest_block - (block_depth-1), latest_block):
-                reserves=contract.call(block_identifier=block)
+                try:
+                    reserves=contract.call(block_identifier=block)
+                except ValueError as e:
+                    print(e.args[0]['message'][0:17])
+                    if e.args[0]['message'][0:17]=="missing trie node":
+                        raise ValueError("You are using a full node, and you are trying to access state that has been pruned. Use an archive node, or request state at a different block.")         
                 print('v2-router-4')
                 optimal_rate=(reserves[1]/reserves[0])
                 if str(block) in prices.keys():
